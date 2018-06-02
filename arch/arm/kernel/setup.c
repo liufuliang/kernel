@@ -32,6 +32,7 @@
 #include <linux/compiler.h>
 #include <linux/sort.h>
 #include <linux/psci.h>
+#include <linux/soc/rockchip/rk_vendor_storage.h>
 
 #include <asm/unified.h>
 #include <asm/cp15.h>
@@ -109,7 +110,6 @@ EXPORT_SYMBOL(elf_hwcap);
 
 unsigned int elf_hwcap2 __read_mostly;
 EXPORT_SYMBOL(elf_hwcap2);
-
 
 #ifdef MULTI_CPU
 struct processor processor __read_mostly;
@@ -1080,6 +1080,7 @@ static int c_show(struct seq_file *m, void *v)
 {
 	int i, j;
 	u32 cpuid;
+	u8 sn_id[33];
 
 	for_each_online_cpu(i) {
 		/*
@@ -1135,9 +1136,12 @@ static int c_show(struct seq_file *m, void *v)
 		seq_printf(m, "CPU revision\t: %d\n\n", cpuid & 15);
 	}
 
+	rk_vendor_read(SN_ID, sn_id, 33);
+
 	seq_printf(m, "Hardware\t: %s\n", machine_name);
 	seq_printf(m, "Revision\t: %04x\n", system_rev);
 	seq_printf(m, "Serial\t\t: %s\n", system_serial);
+	seq_printf(m, "SN\t\t: %s\n", sn_id);
 
 	return 0;
 }
